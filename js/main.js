@@ -7,6 +7,8 @@ var elYear = document.querySelector(".movie__year");
 var elAlert = document.querySelector(".movie__alert");
 var elAlertText = document.querySelector(".alert__text");
 var elAlertTextBold = document.querySelector(".movie__bold-text");
+var elSelect = document.querySelector(".movie__select");
+var elFindMovie = document.querySelector(".movie__find");
 
 let moviesArray = movies.slice(0, 50);
 
@@ -33,11 +35,12 @@ function normolize(array) {
 
 let normolizedArray = normolize(moviesArray);
 
-function renderMovies(array) {
 
+function renderMovies(array) {
+    
     elMoviesWrapper.innerHTML = null;
     elresult.textContent = array.length;
-
+    
     if (elresult.textContent === "0") {
         elAlert.classList = "alert alert-danger alert-dismissible p-2 fade show"
         elAlertText.textContent = "Kechirasiz, Siz kiritgan ma'lumotlar bo'yicha hech qanday kino topilmadi :(";
@@ -47,10 +50,10 @@ function renderMovies(array) {
     }
     
     let elFragment = document.createDocumentFragment()
-
+    
     for (const item of array) {
         let movieCard = elMovieCardTemplate.cloneNode(true);
-
+        
         movieCard.querySelector(".card-img-top").src = item.img;
         movieCard.querySelector(".card__heading").textContent = item.title;
         movieCard.querySelector(".movie__year").textContent = item.movieYear;
@@ -58,35 +61,72 @@ function renderMovies(array) {
         movieCard.querySelector(".movie__link").href = item.videoUrl;
         movieCard.querySelector(".movie_category").textContent = item.categories
         movieCard.querySelector(".movie__link").setAttribute("target", "blank");
-
+        
         elFragment.appendChild(movieCard)
-
+        
     }
-
+    
     elMoviesWrapper.appendChild(elFragment)
-
+    
     return elMoviesWrapper
-
+    
 }
 
-console.log(renderMovies(normolizedArray));
+function generateCategoy(array) {
+    let newCategorieArray = [];
+    
+    for (const item of array) {
+        let categorieArray = item.categories;
+        for (const categoryItem of categorieArray) {
+            if (!newCategorieArray.includes(categoryItem)) {
+                newCategorieArray.push(categoryItem);
+            }
+        }
+    }
+    return newCategorieArray
+}
+
+let categoryList = generateCategoy(normolizedArray)
+
+
+function renderCategory(array, wrapper) {
+    let newFragment = document.createDocumentFragment()
+    
+    for (const item of array) {
+        let newOption = document.createElement("option");
+        newOption.textContent = item;
+        newOption.value = item;
+        
+        newFragment.appendChild(newOption)
+    }
+    
+    wrapper.appendChild(newFragment);
+}
+
 
 
 elForm.addEventListener("submit", function (evt) {
     evt.preventDefault();
-
+    
     let inputYear = elYear.value.trim();
     let inputRating = elRating.value.trim();
-
+    let selectedCategory = elSelect.value.trim();
+    
     let byRatingAndYear = normolizedArray.filter(function (item)  {
         
-        let validation = (item.rating >= inputRating) && (item.movieYear >= inputYear);
+        
+        let select = selectedCategory == "all" ? true : item.categories.includes(selectedCategory); 
+        
+        let validation = (item.rating >= inputRating) && (item.movieYear >= inputYear) && select;
         
         return validation
     });
-
+    
     renderMovies(byRatingAndYear);
-
+    
     
 })
+renderCategory(categoryList, elSelect)
+renderMovies(normolizedArray)
+
 
