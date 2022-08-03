@@ -105,6 +105,11 @@ function renderCategory(array, wrapper) {
 
 
 
+
+
+
+
+
 elForm.addEventListener("submit", function (evt) {
     evt.preventDefault();
     
@@ -112,21 +117,20 @@ elForm.addEventListener("submit", function (evt) {
     let inputRating = elRating.value.trim();
     let selectedCategory = elSelect.value.trim();
     
+    
     let byRatingAndYear = normolizedArray.filter(function (item)  {
-        
-        
         let select = selectedCategory == "all" ? true : item.categories.includes(selectedCategory); 
         
         let validation = (item.rating >= inputRating) && (item.movieYear >= inputYear) && select;
         
         return validation
     });
-    
+
+   
     renderMovies(byRatingAndYear);
     
     
 })
 renderCategory(categoryList, elSelect)
 renderMovies(normolizedArray)
-
 
